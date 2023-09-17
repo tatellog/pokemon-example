@@ -1,25 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import  PokemonList  from "./components/pokemonList/PokemonList";
+import { ThemeProvider } from "styled-components";
+import theme from "./styles/theme.styles";
+import GlobalStyles from "./styles/GlobalStyles";
+import { Pagination } from "./components/pagination/Pagination";
+import { SearchComponent } from "./components/search";
+import usePokemonSearch from "./hooks/usePokemonSerach";
 
 function App() {
+  const apiUrl = "https://pokeapi.co/api/v2"
+  const [currentPage, setCurrentPage] = useState(1);
+  const { searchResults, loading, searchPokemon } = usePokemonSearch(apiUrl);
+
+
+  const onPageChange = (page: number) => {
+    console.log({page})
+    setCurrentPage(page)
+  }
+
+  const handleOnSearch = (query: string) => {
+    if(query !== '') {
+      searchPokemon(query)
+    }
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+        <GlobalStyles />
+        <SearchComponent onSearch={handleOnSearch}/>
+        <PokemonList page={Number(currentPage)}/>
+        <Pagination currentPage={currentPage} totalPages={10} onPageChange={onPageChange} />
+      </ThemeProvider>
   );
 }
 
